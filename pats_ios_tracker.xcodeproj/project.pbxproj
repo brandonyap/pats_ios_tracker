@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB94A49823EB32DD00043FED /* SettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB94A49723EB32DD00043FED /* SettingStore.swift */; };
+		EB94A49A23EB353400043FED /* BeaconLocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB94A49923EB353400043FED /* BeaconLocationModel.swift */; };
+		EB94A49C23EB74FA00043FED /* BeaconLocationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB94A49B23EB74FA00043FED /* BeaconLocationStore.swift */; };
+		EB94A49E23EB806400043FED /* BeaconDetectorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB94A49D23EB806400043FED /* BeaconDetectorStore.swift */; };
+		EB94A4A023EBA3C300043FED /* BeaconDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB94A49F23EBA3C300043FED /* BeaconDetector.swift */; };
 		EBE25AB223E291670099B315 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE25AB123E291670099B315 /* AppDelegate.swift */; };
 		EBE25AB423E291670099B315 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE25AB323E291670099B315 /* SceneDelegate.swift */; };
 		EBE25AB623E291670099B315 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE25AB523E291670099B315 /* ContentView.swift */; };
@@ -16,6 +21,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EB94A49723EB32DD00043FED /* SettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingStore.swift; sourceTree = "<group>"; };
+		EB94A49923EB353400043FED /* BeaconLocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconLocationModel.swift; sourceTree = "<group>"; };
+		EB94A49B23EB74FA00043FED /* BeaconLocationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconLocationStore.swift; sourceTree = "<group>"; };
+		EB94A49D23EB806400043FED /* BeaconDetectorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconDetectorStore.swift; sourceTree = "<group>"; };
+		EB94A49F23EBA3C300043FED /* BeaconDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconDetector.swift; sourceTree = "<group>"; };
 		EBE25AAE23E291670099B315 /* iPats Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPats Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBE25AB123E291670099B315 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EBE25AB323E291670099B315 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +69,11 @@
 				EBE25AB123E291670099B315 /* AppDelegate.swift */,
 				EBE25AB323E291670099B315 /* SceneDelegate.swift */,
 				EBE25AB523E291670099B315 /* ContentView.swift */,
+				EB94A49F23EBA3C300043FED /* BeaconDetector.swift */,
+				EB94A49923EB353400043FED /* BeaconLocationModel.swift */,
+				EB94A49D23EB806400043FED /* BeaconDetectorStore.swift */,
+				EB94A49B23EB74FA00043FED /* BeaconLocationStore.swift */,
+				EB94A49723EB32DD00043FED /* SettingStore.swift */,
 				EBE25AB723E291680099B315 /* Assets.xcassets */,
 				EBE25ABC23E291680099B315 /* LaunchScreen.storyboard */,
 				EBE25ABF23E291680099B315 /* Info.plist */,
@@ -146,6 +161,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB94A49E23EB806400043FED /* BeaconDetectorStore.swift in Sources */,
+				EB94A4A023EBA3C300043FED /* BeaconDetector.swift in Sources */,
+				EB94A49A23EB353400043FED /* BeaconLocationModel.swift in Sources */,
+				EB94A49823EB32DD00043FED /* SettingStore.swift in Sources */,
+				EB94A49C23EB74FA00043FED /* BeaconLocationStore.swift in Sources */,
 				EBE25AB223E291670099B315 /* AppDelegate.swift in Sources */,
 				EBE25AB423E291670099B315 /* SceneDelegate.swift in Sources */,
 				EBE25AB623E291670099B315 /* ContentView.swift in Sources */,

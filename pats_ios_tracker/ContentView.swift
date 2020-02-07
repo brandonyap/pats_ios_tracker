@@ -6,130 +6,117 @@
 //  Copyright © 2020 Brandon Yap. All rights reserved.
 //
 
-import Combine
-import CoreLocation
 import SwiftUI
 
-class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate {
-    var objectWillChange = PassthroughSubject<Void, Never>()
-    var locationManager: CLLocationManager?
-    var lastDistance = 0
-    var txpower: Float = -62.0
-    var uuid: String
-    var beaconName: String
-    var location_x: Float
-    var location_y: Float
-    
-    init(uuid: String, beaconName: String, location_x: Float, location_y: Float) {
-        self.uuid = uuid
-        self.beaconName = beaconName
-        self.location_x = location_x
-        self.location_y = location_y
-        super.init()
-        
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.requestWhenInUseAuthorization()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse {
-            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-                if CLLocationManager.isRangingAvailable() {
-                    print("Starting Scan")
-                    startScanning()
-                }
-            }
-        }
-    }
-    
-    func startScanning() {
-        let uuid = UUID(uuidString: self.stringToUuidFormat(string: self.uuid))!
-        let constraint = CLBeaconIdentityConstraint(uuid: uuid, major: 0, minor: 0)
-        let beaconRegion = CLBeaconRegion(beaconIdentityConstraint: constraint, identifier: self.beaconName)
-        
-        print(uuid)
-        
-        locationManager?.startMonitoring(for: beaconRegion)
-        locationManager?.startRangingBeacons(satisfying: constraint)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
-        if let beacon = beacons.first {
-            update(rssi: beacon.rssi)
-            print(lastDistance)
-        } else {
-            update(rssi: 0)
-            print("Couldn't find beacon")
-        }
-    }
-    
-    func update(rssi: Int) {
-        lastDistance = rssi
-        objectWillChange.send(())
-    }
-    
-    func stringToUuidFormat(string: String) -> String {
-        let characters = Array(string)
-        let uuidString = String(characters[..<8]) + "-" + String(characters[8...11]) + "-" + String(characters[12...15]) + "-" + String(characters[16...19]) + "-" + String(characters[20...])
-        print(uuidString)
-        return uuidString
-    }
-}
-
-struct BigText: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .font(Font.system(size: 72, design: .rounded))
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-    }
-}
-
 struct ContentView: View {
-    @ObservedObject var detectorOne = BeaconDetector(uuid: "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", beaconName: "iBeacon 1", location_x: 0.0, location_y: 3.0)
-    @ObservedObject var detectorTwo = BeaconDetector(uuid: "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2", beaconName: "iBeacon 2", location_x: 5.5, location_y: 3.0)
-    @ObservedObject var detectorThree = BeaconDetector(uuid: "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3", beaconName: "iBeacon 3", location_x: 0.0, location_y: 0.0)
-    @ObservedObject var detectorFour = BeaconDetector(uuid: "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4", beaconName: "iBeacon 4", location_x: 5.5, location_y: 0.0)
-    
     @State private var active = false
+    @State private var url_address = ""
+    @ObservedObject var settingStore = SettingStore()
+    @ObservedObject var store = BeaconLocationStore()
+    @ObservedObject var beaconStore = BeaconDetectorStore()
+    let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
     
     var body: some View {
-        Form {
-            HStack {
-                Text("Host URL")
-            }
-            HStack {
-                Toggle("Active", isOn: $active)
-            }
-            Spacer()
-            HStack {
-                Text("Beacon 1 Signal Strength")
-                Spacer()
-                Text(String(detectorOne.lastDistance))
-            }
-            HStack {
-                Text("Beacon 2 Signal Strength")
-                Spacer()
-                Text(String(detectorTwo.lastDistance))
-            }
-            HStack {
-                Text("Beacon 3 Signal Strength")
-                Spacer()
-                Text(String(detectorThree.lastDistance))
-            }
-            HStack {
-                Text("Beacon 4 Signal Strength")
-                Spacer()
-                Text(String(detectorFour.lastDistance))
-            }
-            Spacer()
-            HStack {
-                Text("Location")
-                Spacer()
-                Text(createLocationString(location: trilateration(d1: pathloss(rssi: detectorOne.lastDistance, tx_power: detectorOne.txpower), d2: pathloss(rssi: detectorTwo.lastDistance, tx_power: detectorTwo.txpower), d3: pathloss(rssi: detectorThree.lastDistance, tx_power: detectorThree.txpower), p: Float(5.5), q: Float(0.0), r: Float(3.0))))
-            }
+        NavigationView {
+            Form {
+                Section {
+                    HStack {
+                        TextField("Example: 0.0.0.0:7000", text: $url_address)
+                    }
+                }
+                if (active) {
+                    Section {
+                        ForEach(beaconStore.beacons) { beacon in
+                            HStack {
+                                Text(String(beacon.beaconName + " Signal Strength"))
+                                Spacer()
+                                Text(String(beacon.lastDistance))
+                            }
+                        }
+                    }
+                    Section {
+                        HStack {
+                            Text("Location")
+                            Spacer()
+                            Text(createLocationString(location: trilaterationNew(beacons: beaconStore.beacons)))
+                        }
+                    }
+                }
+            }.navigationBarTitle(Text("iPats Tracker"))
+                .navigationBarItems(leading: Button(action: startStop) {
+                    if (active) {
+                        Text("Stop")
+                    } else {
+                        Text("Start")
+                    }
+                }, trailing: Button(action: save) {
+                    Text("Save Address")
+                })
+        }.onAppear(perform: onStart).onReceive(timer) {_ in
+            self.beaconStore.objectWillChange.send()
         }
     }
+    
+    func save() {
+        self.settingStore.url_address = url_address
+        UserDefaults.standard.set(self.settingStore.url_address, forKey: "address")
+        print("Saved URL Address: " + self.settingStore.url_address)
+    }
+    
+    func startStop() {
+        if (self.active) {
+            self.active = false;
+            self.beaconStore.beacons.removeAll()
+        } else {
+            self.active = true;
+            self.loadBeacons()
+        }
+    }
+    
+    func onStart() {
+        self.url_address = self.settingStore.url_address
+    }
+    
+    func loadBeacons() {
+        guard let url = URL(string: "http://" + settingStore.url_address + "/api/beacons/group/1/location/all") else {
+            print("Invalid URL")
+            return
+        }
+        print(url)
+        let request = URLRequest(url: url)
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if error != nil {
+                // OH NO! An error occurred...
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                return
+            }
+            if let data = data {
+                if let decodedResponse = try?
+                    JSONDecoder().decode(BeaconLocationListResponse.self, from: data) {
+                    
+                    // we have good data – go back to the main thread
+                    DispatchQueue.main.async {
+                        // update our UI
+                        decodedResponse.data.forEach() { beacon in
+                            self.beaconStore.beacons.append(BeaconDetector(uuid: beacon.uuid, beaconName: "Beacon " + String(beacon.beacons_id), location_x: beacon.location_x, location_y: beacon.location_y))
+                        }
+                    }
+                    // everything is good, so we can exit
+                    return
+                }
+            }
+        }.resume()
+    }
+    
+//    func update() {
+//        self.store.beacons.forEach() { beacon in
+//            self.beaconStore.beacons.append(BeaconDetector(uuid: beacon.uuid, beaconName: String(beacon.beacons_id), location_x: beacon.location_x, location_y: beacon.location_y))
+//        }
+//    }
 }
 
 func pathloss(rssi: Int, tx_power: Float) -> Float {
@@ -142,6 +129,30 @@ func pathloss(rssi: Int, tx_power: Float) -> Float {
 func trilateration(d1: Float, d2: Float, d3: Float, p: Float, q: Float, r: Float) -> Array<Float> {
     let x = (powf(d1, 2.0) - powf(d2, 2.0) + powf(p, 2.0)) / (2.0 * p)
     let y = ((powf(d1, 2.0) - powf(d2, 2.0) + powf(q, 2.0) + powf(r, 2.0)) / (2.0 * r)) - ((q / r) * x)
+    return [x, y]
+}
+
+func trilaterationNew(beacons: [BeaconDetector]) -> Array<Float> {
+    if (beacons.count < 3) {
+        return [0, 0]
+    }
+    let sorted = beacons.sorted(by: { $0.lastDistance > $1.lastDistance })
+    let beacon_1 = sorted[0]
+    let beacon_2 = sorted[1]
+    let beacon_3 = sorted[2]
+    
+    let r1 = pathloss(rssi: beacon_1.lastDistance, tx_power: beacon_1.txpower)
+    let r2 = pathloss(rssi: beacon_2.lastDistance, tx_power: beacon_2.txpower)
+    let r3 = pathloss(rssi: beacon_3.lastDistance, tx_power: beacon_3.txpower)
+    
+    let A = 2*beacon_2.location_x - 2*beacon_1.location_x
+    let B = 2*beacon_2.location_y - 2*beacon_2.location_y
+    let C = powf(r1, 2.0) - powf(r2, 2.0) - powf(beacon_1.location_x, 2.0) + powf(beacon_2.location_x, 2.0) - powf(beacon_1.location_y, 2.0) + powf(beacon_2.location_y, 2.0)
+    let D = 2*beacon_3.location_x - 2*beacon_2.location_x
+    let E = 2*beacon_3.location_y - 2*beacon_2.location_y
+    let F = powf(r2, 2.0) - powf(r3, 2.0) - powf(beacon_2.location_x, 2.0) + powf(beacon_3.location_x, 2.0) - powf(beacon_2.location_y, 2.0) + powf(beacon_3.location_y, 2.0)
+    let x = (C*E - F*B) / (E*A - B*D)
+    let y = (C*D - A*F) / (B*D - A*E)
     return [x, y]
 }
 
