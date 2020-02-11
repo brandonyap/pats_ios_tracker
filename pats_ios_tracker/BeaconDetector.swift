@@ -13,7 +13,7 @@ import SwiftUI
 class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate, Identifiable {
     var objectWillChange = PassthroughSubject<Void, Never>()
     var locationManager: CLLocationManager?
-    var lastDistance = Int.min
+    var lastDistance: CLLocationAccuracy = Double.infinity
     var txpower: Float = -62.0
     var uuid: String
     var beaconName: String
@@ -54,15 +54,15 @@ class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate, Ide
     
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
         if let beacon = beacons.first {
-            update(rssi: beacon.rssi)
-            print(lastDistance)
+            update(rssi: beacon.accuracy)
+//            print(lastDistance)
         } else {
-            update(rssi: Int.min)
+            update(rssi: Double.infinity)
             print("Couldn't find beacon")
         }
     }
     
-    func update(rssi: Int) {
+    func update(rssi: CLLocationAccuracy) {
         lastDistance = rssi
         objectWillChange.send(())
     }

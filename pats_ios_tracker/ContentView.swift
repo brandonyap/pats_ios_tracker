@@ -136,21 +136,25 @@ func trilaterationNew(beacons: [BeaconDetector]) -> Array<Float> {
     if (beacons.count < 3) {
         return [0, 0]
     }
-    let sorted = beacons.sorted(by: { $0.lastDistance > $1.lastDistance })
+    let sorted = beacons.sorted(by: { $1.lastDistance > $0.lastDistance })
     let beacon_1 = sorted[0]
     let beacon_2 = sorted[1]
     let beacon_3 = sorted[2]
+        
+//    let r1 = pathloss(rssi: beacon_1.lastDistance, tx_power: beacon_1.txpower)
+//    let r2 = pathloss(rssi: beacon_2.lastDistance, tx_power: beacon_2.txpower)
+//    let r3 = pathloss(rssi: beacon_3.lastDistance, tx_power: beacon_3.txpower)
     
-    let r1 = pathloss(rssi: beacon_1.lastDistance, tx_power: beacon_1.txpower)
-    let r2 = pathloss(rssi: beacon_2.lastDistance, tx_power: beacon_2.txpower)
-    let r3 = pathloss(rssi: beacon_3.lastDistance, tx_power: beacon_3.txpower)
+    let r1 = beacon_1.lastDistance
+    let r2 = beacon_2.lastDistance
+    let r3 = beacon_3.lastDistance
     
     let A = 2*beacon_2.location_x - 2*beacon_1.location_x
-    let B = 2*beacon_2.location_y - 2*beacon_2.location_y
-    let C = powf(r1, 2.0) - powf(r2, 2.0) - powf(beacon_1.location_x, 2.0) + powf(beacon_2.location_x, 2.0) - powf(beacon_1.location_y, 2.0) + powf(beacon_2.location_y, 2.0)
+    let B = 2*beacon_2.location_y - 2*beacon_1.location_y
+    let C = Float(powl(r1, 2.0) - powl(r2, 2.0)) - powf(beacon_1.location_x, 2.0) + powf(beacon_2.location_x, 2.0) - powf(beacon_1.location_y, 2.0) + powf(beacon_2.location_y, 2.0)
     let D = 2*beacon_3.location_x - 2*beacon_2.location_x
     let E = 2*beacon_3.location_y - 2*beacon_2.location_y
-    let F = powf(r2, 2.0) - powf(r3, 2.0) - powf(beacon_2.location_x, 2.0) + powf(beacon_3.location_x, 2.0) - powf(beacon_2.location_y, 2.0) + powf(beacon_3.location_y, 2.0)
+    let F = Float(powl(r2, 2.0) - powl(r3, 2.0)) - powf(beacon_2.location_x, 2.0) + powf(beacon_3.location_x, 2.0) - powf(beacon_2.location_y, 2.0) + powf(beacon_3.location_y, 2.0)
     let x = (C*E - F*B) / (E*A - B*D)
     let y = (C*D - A*F) / (B*D - A*E)
     return [x, y]
