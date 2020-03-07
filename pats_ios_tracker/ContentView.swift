@@ -11,6 +11,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var active = false
     @State private var url_address = ""
+    @State private var group_id = ""
     @ObservedObject var settingStore = SettingStore()
     @ObservedObject var store = BeaconLocationStore()
     @ObservedObject var beaconStore = BeaconDetectorStore()
@@ -22,6 +23,9 @@ struct ContentView: View {
                 Section {
                     HStack {
                         TextField("Example: 0.0.0.0:7000", text: $url_address)
+                    }
+                    HStack {
+                        TextField("Group ID", text: $group_id)
                     }
                 }
                 if (active) {
@@ -50,7 +54,7 @@ struct ContentView: View {
                         Text("Start")
                     }
                 }, trailing: Button(action: save) {
-                    Text("Save Address")
+                    Text("Save")
                 })
         }.onAppear(perform: onStart).onReceive(timer) {_ in
             self.beaconStore.objectWillChange.send()
@@ -59,7 +63,9 @@ struct ContentView: View {
     
     func save() {
         self.settingStore.url_address = url_address
+        self.settingStore.group_id = Int(group_id) ?? 0
         UserDefaults.standard.set(self.settingStore.url_address, forKey: "address")
+        UserDefaults.standard.set(self.settingStore.group_id, forKey: "group_id")
         print("Saved URL Address: " + self.settingStore.url_address)
     }
     
@@ -68,6 +74,7 @@ struct ContentView: View {
             self.active = false;
             self.beaconStore.beacons.removeAll()
         } else {
+            save()
             self.active = true;
             self.loadBeacons()
         }
@@ -75,10 +82,11 @@ struct ContentView: View {
     
     func onStart() {
         self.url_address = self.settingStore.url_address
+        self.group_id = String(self.settingStore.group_id)
     }
     
     func loadBeacons() {
-        guard let url = URL(string: "http://" + settingStore.url_address + "/api/beacons/group/1/location/all") else {
+        guard let url = URL(string: "http://" + settingStore.url_address + "/api/beacons/group/" + String(settingStore.group_id) + "/location/all") else {
             print("Invalid URL")
             return
         }
@@ -140,6 +148,10 @@ func trilaterationNew(beacons: [BeaconDetector]) -> Array<Float> {
     let beacon_1 = sorted[0]
     let beacon_2 = sorted[1]
     let beacon_3 = sorted[2]
+    
+    if (beacon_1.lastDistance == Double.infinity || beacon_2.lastDistance == Double.infinity || beacon_3.lastDistance == Double.infinity) {
+        return [-100, -100]
+    }
         
 //    let r1 = pathloss(rssi: beacon_1.lastDistance, tx_power: beacon_1.txpower)
 //    let r2 = pathloss(rssi: beacon_2.lastDistance, tx_power: beacon_2.txpower)

@@ -18,6 +18,10 @@
 		EBE25AB823E291680099B315 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBE25AB723E291680099B315 /* Assets.xcassets */; };
 		EBE25ABB23E291680099B315 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBE25ABA23E291680099B315 /* Preview Assets.xcassets */; };
 		EBE25ABE23E291680099B315 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE25ABC23E291680099B315 /* LaunchScreen.storyboard */; };
+		EBF63A14241427FF00438376 /* KalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF63A13241427FF00438376 /* KalmanFilter.swift */; };
+		EBF63A162414283500438376 /* KalmanFilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF63A152414283500438376 /* KalmanFilterType.swift */; };
+		EBF63A182414285D00438376 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF63A172414285D00438376 /* Matrix.swift */; };
+		EBF63A1A2414287D00438376 /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF63A192414287D00438376 /* DoubleExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +38,10 @@
 		EBE25ABA23E291680099B315 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EBE25ABD23E291680099B315 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EBE25ABF23E291680099B315 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EBF63A13241427FF00438376 /* KalmanFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KalmanFilter.swift; sourceTree = "<group>"; };
+		EBF63A152414283500438376 /* KalmanFilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KalmanFilterType.swift; sourceTree = "<group>"; };
+		EBF63A172414285D00438376 /* Matrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
+		EBF63A192414287D00438376 /* DoubleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +74,7 @@
 		EBE25AB023E291670099B315 /* pats_ios_tracker */ = {
 			isa = PBXGroup;
 			children = (
+				EBF63A122414273A00438376 /* Kalman Filter */,
 				EBE25AB123E291670099B315 /* AppDelegate.swift */,
 				EBE25AB323E291670099B315 /* SceneDelegate.swift */,
 				EBE25AB523E291670099B315 /* ContentView.swift */,
@@ -88,6 +97,17 @@
 				EBE25ABA23E291680099B315 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		EBF63A122414273A00438376 /* Kalman Filter */ = {
+			isa = PBXGroup;
+			children = (
+				EBF63A13241427FF00438376 /* KalmanFilter.swift */,
+				EBF63A152414283500438376 /* KalmanFilterType.swift */,
+				EBF63A172414285D00438376 /* Matrix.swift */,
+				EBF63A192414287D00438376 /* DoubleExtension.swift */,
+			);
+			path = "Kalman Filter";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,9 +181,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBF63A1A2414287D00438376 /* DoubleExtension.swift in Sources */,
+				EBF63A14241427FF00438376 /* KalmanFilter.swift in Sources */,
 				EB94A49E23EB806400043FED /* BeaconDetectorStore.swift in Sources */,
 				EB94A4A023EBA3C300043FED /* BeaconDetector.swift in Sources */,
+				EBF63A162414283500438376 /* KalmanFilterType.swift in Sources */,
 				EB94A49A23EB353400043FED /* BeaconLocationModel.swift in Sources */,
+				EBF63A182414285D00438376 /* Matrix.swift in Sources */,
 				EB94A49823EB32DD00043FED /* SettingStore.swift in Sources */,
 				EB94A49C23EB74FA00043FED /* BeaconLocationStore.swift in Sources */,
 				EBE25AB223E291670099B315 /* AppDelegate.swift in Sources */,

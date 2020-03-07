@@ -14,12 +14,15 @@ class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate, Ide
     var objectWillChange = PassthroughSubject<Void, Never>()
     var locationManager: CLLocationManager?
     var lastDistance: CLLocationAccuracy = Double.infinity
+    var currentDistance: CLLocationAccuracy = 0
     var txpower: Float = -62.0
     var uuid: String
     var beaconName: String
     var location_x: Float
     var location_y: Float
     
+    var filter = KalmanFilter(stateEstimatePrior: 0.0, errorCovariancePrior: 1)
+
     init(uuid: String, beaconName: String, location_x: Float, location_y: Float) {
         self.uuid = uuid
         self.beaconName = beaconName
@@ -57,12 +60,23 @@ class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate, Ide
             update(rssi: beacon.accuracy)
 //            print(lastDistance)
         } else {
-            update(rssi: Double.infinity)
+            updateNotFound(rssi: Double.infinity)
             print("Couldn't find beacon")
         }
     }
     
     func update(rssi: CLLocationAccuracy) {
+        let prediction = filter.predict(stateTransitionModel: 1, controlInputModel: 0, controlVector: 0, covarianceOfProcessNoise: 0)
+        let update = prediction.update(measurement: rssi, observationModel: 1, covarienceOfObservationNoise: 0.1)
+        
+        filter = update
+        
+        currentDistance = filter.stateEstimatePrior
+        lastDistance = currentDistance
+        objectWillChange.send(())
+    }
+    
+    func updateNotFound(rssi: CLLocationAccuracy) {
         lastDistance = rssi
         objectWillChange.send(())
     }
